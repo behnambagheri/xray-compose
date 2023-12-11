@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  ssv2ray:
+    container_name: ssv2ray
+    image: alpine
+    ports:
+      - "127.0.0.1:444:443"
+    environment:
+      - SS_PASS=${SS_PASS}
+      - SS_PATH=${SS_PASS}
+      - SS_CIPHER=${SS_CIPHER}
+      - SS_PORT=${SS_PORT}
+    working_dir: /usr/local/bin/
+    volumes:
+      - ./ssv2ray:/usr/local/bin/
+    command: [ "go-shadowsocks", "-s", "ss://${SS_CIPHER}:${SS_PASS}@:${SS_PORT}", "-plugin", "v2ray-plugin", "-plugin-opts", "server;path=${SS_PATH}"]
+    restart: always
+    networks:
+      - "xray-net"
+
+  website:
+    container_name: website
+    image: nginx:alpine
+    ports:
+      - "127.0.0.1:3000:80"
+    volumes: [ "./website:/usr/share/nginx/html" ]
+    restart: always
+    networks:
+      - "xray-net"
+
+  xray:
+    container_name: xray
+    image: teddysun/xray
+    ports:
+      - "127.0.0.1:5310:5310"
+      - "127.0.0.1:6310:6310"
+    volumes:
+      - "./xray/etc:/etc/xray/"
+      - "./xray/log/:/var/log/xray/"
+    restart: always
+    networks:
+      - "xray-net"
+
+  xray-stats:
+    container_name: xray-stats
+    image: ubuntu
+    volumes:
+      - "./xray/bin/:/usr/local/bin/"
+      - "./xray/stats:/var/log/xray-stats/"
+    command: /usr/local/bin/stats
+    restart: no
+    networks:
+      - "xray-net"
+    profiles:
+      - stats
+
+networks:
+  xray-net:
+    name: xray-net

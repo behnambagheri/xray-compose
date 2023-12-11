@@ -1,0 +1,73 @@
+#!/bin/bash
+
+check_dependency(){
+  local is_installed PACKAGE_NAME
+  PACKAGE_NAME="column"
+  is_installed=$(dpkg -l | grep -qw $PACKAGE_NAME)
+  if ! [[ "$is_installed" ]]; then
+      apt update -y &> /dev/null
+      apt install -y bsdmainutils &> /dev/null
+  fi
+}
+
+stats_collector(){
+  _APISERVER=xray:10085
+  _V2CTL=/usr/local/bin/v2ctl
+
+  mkdir /var/log/xray-stats &> /dev/null
+
+
+  apidata () {
+      local ARGS=
+      if [[ $1 == "reset" ]]; then
+        ARGS="reset: true"
+      fi
+      $_V2CTL api --server=$_APISERVER StatsService.QueryStats "${ARGS}" \
+      | awk '{
+          if (match($1, /name:/)) {
+              f=1; gsub(/^"|link"$/, "", $2);
+              split($2, p,  ">>>");
+              printf "%s:%s->%s\t", p[1],p[2],p[4];
+          }
+          else if (match($1, /value:/) && f){ f = 0; printf "%.0f\n", $2; }
+          else if (match($0, /^>$/) && f) { f = 0; print 0; }
+      }'
+  }
+
+  print_sum() {
+      local DATA="$1"
+      local PREFIX="$2"
+      local SORTED=$(echo "$DATA" | grep "^${PREFIX}" | sort -r)
+      local SUM=$(echo "$SORTED" | awk '
+          /->up/{us+=$2}
+          /->down/{ds+=$2}
+          END{
+              printf "SUM->up:\t%.0f\nSUM->down:\t%.0f\nSUM->TOTAL:\t%.0f\n", us, ds, us+ds;
+          }')
+      echo -e "${SORTED}\n${SUM}" \
+      | numfmt --field=2 --suffix=B --to=iec \
+      | column -t
+  }
+
+  DATA=$(apidata $1)
+  echo "------------Inbound----------"
+  print_sum "$DATA" "inbound"
+  echo "-----------------------------"
+  echo "------------Outbound----------"
+  print_sum "$DATA" "outbound"
+  echo "-----------------------------"
+  echo
+  echo "-------------User------------"
+  print_sum "$DATA" "user"
+  echo "-----------------------------"
+
+}
+
+check_dependency
+
+if [[ "$1" == "reset" ]]; then
+    stats_collector reset &> /var/log/xray-stats/stats-"$(date +"%Y-%m-%d-%H-%M-%S")".reset
+else
+    stats_collector "" &> /var/log/xray-stats/stats-"$(date +"%Y-%m-%d-%H-%M-%S")"
+
+fi

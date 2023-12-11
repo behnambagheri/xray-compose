@@ -1,0 +1,251 @@
+{
+  "dns": {
+    "servers": [
+      "8.8.8.8",
+      "8.8.4.4"
+    ]
+  },
+
+  "stats": {},
+
+  "log": {
+    "loglevel": "warning",
+    "access": "/var/log/xray/access.log",
+    "error": "/var/log/xray/error.log"
+  },
+
+  "api": {
+    "tag": "api",
+    "services": [
+        "HandlerService",
+        "LoggerService",
+        "StatsService"
+    ]
+},
+
+  "policy": {
+    "levels": {
+        "0": {
+            "statsUserUplink": true,
+            "statsUserDownlink": true
+        }
+    },
+    "system": {
+        "statsInboundUplink": true,
+        "statsInboundDownlink": true,
+        "statsOutboundUplink": true,
+        "statsOutboundDownlink": true
+    }
+},
+
+
+
+  "inbounds": [
+
+  {
+      "tag":"vmess",
+      "listen": "0.0.0.0",
+      "port": 6310,
+      "protocol": "vmess",
+      "streamSettings": {
+                "network": "ws",
+                "security": "none"
+            },
+
+      "settings": {
+        "clients": [
+
+          {
+            "email":"public",
+            "id": "ba671694-27f6-4ced-bacc-6843ab6cbe85",
+            "alterId": 0,
+            "security": "aes-128-gcm"
+          },
+          {
+            "email":"alireza",
+            "id": "deb7cc88-c0df-4e47-a798-e7d9df387028",
+            "alterId": 0,
+            "security": "aes-128-gcm"
+          },
+          {
+            "email":"matin",
+            "id": "1aba6d04-798b-4c77-9691-091e4769b57d",
+            "alterId": 0,
+            "security": "aes-128-gcm"
+          },
+          {
+            "email":"asal",
+            "id": "5959b214-5347-40bc-85ed-e8bf8003af2e",
+            "alterId": 0,
+            "security": "aes-128-gcm"
+          },
+          {
+            "email":"amir",
+            "id": "dd5c5e9d-88aa-484a-8162-9f5f029796f9",
+            "alterId": 0,
+            "security": "aes-128-gcm"
+          },
+          {
+            "email":"nikneshan",
+            "id": "90c8cbe4-24db-4f23-8a23-22d74756c2f0",
+            "alterId": 0,
+            "security": "aes-128-gcm"
+          },
+          {
+            "email":"farshad",
+            "id": "afc3f96a-cb90-4fe8-b0a0-7d4ba8b1476a",
+            "alterId": 0,
+            "security": "aes-128-gcm"
+          },
+          {
+            "email":"maryam",
+            "id": "a423e06e-b188-4bac-b560-6177d9ab6455",
+            "alterId": 0,
+            "security": "aes-128-gcm"
+          },
+          {
+            "email":"mahdi-max",
+            "id": "74d0c29a-4c60-4267-9329-e32738b5d6d9",
+            "alterId": 0,
+            "security": "aes-128-gcm"
+          },
+          {
+            "email":"max-office",
+            "id": "8096a5ee-a00c-4743-8847-8aafcd6e28fd",
+            "alterId": 0,
+            "security": "aes-128-gcm"
+          },
+          {
+            "email":"ehsan",
+            "id": "a7cb8ed1-ff9c-469e-be49-852b3d983417",
+            "alterId": 0,
+            "security": "aes-128-gcm"
+          },
+          {
+            "email":"behnam",
+            "id": "275969b4-2868-4d1f-8139-5715a4943759",
+            "alterId": 0,
+            "security": "aes-128-gcm"
+          },
+          {
+            "email":"beas",
+            "id": "b0bffeb7-997b-4025-a62d-eb6c76739389",
+            "alterId": 0,
+            "security": "aes-128-gcm"
+          }
+        ]
+      }
+    },
+
+  {
+      "tag": "trojan",
+      "listen": "0.0.0.0",
+      "port": "5310",
+      "protocol": "trojan",
+      "settings": {
+        "clients": [
+
+          {
+            "email":"public",
+            "password": "ba671694-27f6-4ced-bacc-6843ab6cbe85"
+          },
+          {
+            "email":"alireza",
+            "password": "deb7cc88-c0df-4e47-a798-e7d9df387028"
+          },
+          {
+            "email":"matin",
+            "password": "1aba6d04-798b-4c77-9691-091e4769b57d"
+          },
+          {
+            "email":"asal",
+            "password": "5959b214-5347-40bc-85ed-e8bf8003af2e"
+          },
+          {
+            "email":"amir",
+            "password": "dd5c5e9d-88aa-484a-8162-9f5f029796f9"
+          },
+          {
+            "email":"nikneshan",
+            "password": "90c8cbe4-24db-4f23-8a23-22d74756c2f0"
+          },
+          {
+            "email":"vahid",
+            "password": "cf195d4f-e8a8-44ea-ba6b-8fcb0291117a"
+          },
+          {
+            "email":"farshad",
+            "password": "afc3f96a-cb90-4fe8-b0a0-7d4ba8b1476a"
+          },
+          {
+            "email":"fatemeh",
+            "password": "3dfa3531-b2ea-4deb-8cdc-4cb3818d6141"
+          },
+          {
+            "email":"maryam",
+            "password": "a423e06e-b188-4bac-b560-6177d9ab6455"
+          },
+          {
+            "email":"mahdi-max",
+            "password": "74d0c29a-4c60-4267-9329-e32738b5d6d9"
+          },
+          {
+            "email":"max-office",
+            "password": "8096a5ee-a00c-4743-8847-8aafcd6e28fd"
+          },
+          {
+            "email":"ehsan",
+            "password": "a7cb8ed1-ff9c-469e-be49-852b3d983417"
+          },
+          {
+            "email":"behnam",
+            "password": "275969b4-2868-4d1f-8139-5715a4943759"
+          },
+          {
+            "email":"beas",
+            "password": "b0bffeb7-997b-4025-a62d-eb6c76739389"
+          }
+
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "wsSettings": {
+          "path": "/tr-ws-IqYJAouF"
+        }
+      }
+    },
+
+  {
+            "listen": "0.0.0.0",
+            "port": 10085,
+            "protocol": "dokodemo-door",
+            "settings": {
+                "address": "0.0.0.0"
+            },
+            "tag": "api"
+        }
+  ],
+
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "tag": "freedom"
+    }
+  ],
+
+  "routing": {
+        "rules": [
+
+            {
+                "inboundTag": [
+                    "api"
+                ],
+                "outboundTag": "api",
+                "type": "field"
+            }
+        ],
+        "domainStrategy": "IPIfNonMatch"
+    }
+
+}

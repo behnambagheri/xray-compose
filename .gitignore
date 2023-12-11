@@ -1,0 +1,5 @@
+*.company
+*/*.company
+.env
+config.json
+*/config.json
