@@ -57,6 +57,7 @@ services:
 
 
   sshd:
+    container_name: sshd
     image: rastasheep/ubuntu-sshd:18.04
 #    build: ./sshd
     ports:
