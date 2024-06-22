@@ -11,3 +11,9 @@ AcceptEnv LANG LC_*
 Subsystem sftp /usr/lib/openssh/sftp-server
 
 AllowUsers 224b3f18-5efc-4a5f-86d9-a797673410b8
+
+# SSH Proxy Configuration
+Match User 224b3f18-5efc-4a5f-86d9-a797673410b8
+  AllowTcpForwarding yes
+  PermitTunnel yes
+  GatewayPorts yes
