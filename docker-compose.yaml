@@ -69,7 +69,7 @@ services:
 #      - USER=224b3f18-5efc-4a5f-86d9-a797673410b8
 #      - UID=1000
 #      - GID=1000
-    command: "sh -c 'useradd -m -u ${UID} -g ${GID} ${mUSER} && mkdir -p /home/${mUSER}/.ssh && chown -R ${mUSER}:${mUSER} /home/${USER} && exec /usr/sbin/sshd -D -e'"
+    command: "sh -c 'useradd -m -u ${UID}  ${mUSER} && mkdir -p /home/${mUSER}/.ssh && chown -R ${mUSER}:${mUSER} /home/${USER} && exec /usr/sbin/sshd -D -e'"
     restart: always
     networks:
       - "xray-net"
