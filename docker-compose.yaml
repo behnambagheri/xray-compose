@@ -68,6 +68,9 @@ services:
       - UID=1000
       - GID=1000
     command: "sh -c 'groupadd -g ${GID} ${USER} && useradd -m -u ${UID} -g ${GID} ${USER} && mkdir -p /home/${USER}/.ssh && chown -R ${USER}:${USER} /home/${USER} && exec /usr/sbin/sshd -D -e'"
+    restart: always
+    networks:
+      - "xray-net"
 
 networks:
   xray-net:
