@@ -6,3 +6,4 @@ config.json
 */config.json
 *company*
 .idea
+./sshd/id_ed25519
