@@ -64,7 +64,7 @@ services:
       - "12820:22"
     volumes:
       - ./sshd/sshd_config:/etc/ssh/sshd_config
-      - ./sshd/authorized_keys:/home/224b3f18-5efc-4a5f-86d9-a797673410b8/.ssh/authorized_keys
+      - ./sshd/authorized_keys:/home/${mUSER}/.ssh/authorized_keys
     environment:
       - USER=224b3f18-5efc-4a5f-86d9-a797673410b8
       - UID=1000
