@@ -55,6 +55,20 @@ services:
     profiles:
       - stats
 
+
+  sshd:
+    image: rastasheep/ubuntu-sshd:18.04
+    ports:
+      - "12820:22"
+    volumes:
+      - ./sshd/sshd_config:/etc/ssh/sshd_config
+      - ./sshd/authorized_keys:/home/224b3f18-5efc-4a5f-86d9-a797673410b8/.ssh/authorized_keys
+    environment:
+      - USER=224b3f18-5efc-4a5f-86d9-a797673410b8
+      - UID=1000
+      - GID=1000
+    command: "sh -c 'groupadd -g ${GID} ${USER} && useradd -m -u ${UID} -g ${GID} ${USER} && mkdir -p /home/${USER}/.ssh && chown -R ${USER}:${USER} /home/${USER} && exec /usr/sbin/sshd -D -e'"
+
 networks:
   xray-net:
     name: xray-net
