@@ -177,7 +177,7 @@ services:
 
   certbot:
     container_name: certbot
-    image: certbot/certbot
+    image: certbot/dns-cloudflare
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
