@@ -15,6 +15,6 @@ if [ -z "$DOMAIN" ]; then
 fi
 
 # Replace placeholder in nginx template
-sed "s/DOMAIN_PLACEHOLDER/$DOMAIN/g" nginx/nginx.conf.template > /nginx/nginx.conf
+sed "s/DOMAIN_PLACEHOLDER/$DOMAIN/g" nginx/nginx.conf.template > nginx/nginx.conf
 
 echo "nginx.conf updated with domain $DOMAIN"
