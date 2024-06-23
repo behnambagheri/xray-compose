@@ -73,6 +73,10 @@ if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
 echo "### Create cloudflare credentials ..."
 
+if ! [[ -d "./certbot/config/" ]]; then
+    mkdir -p ./certbot/config/ 
+fi
+
 echo "dns_cloudflare_api_token = $CLOUDFLARE_API_TOKEN" > ./certbot/config/cloudflare.ini
 
 docker compose run --rm --entrypoint "\
