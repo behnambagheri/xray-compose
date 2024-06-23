@@ -78,8 +78,10 @@ docker compose run --rm --entrypoint "\
     $domain_args \
     --rsa-key-size $rsa_key_size \
     --agree-tos \
+    --non-interactive \
     --force-renewal \
     --dns-cloudflare \
+    --dns-cloudflare-propagation-seconds 30 \
     --dns-cloudflare-credentials /config/cloudflare.ini" certbot
 echo
 
