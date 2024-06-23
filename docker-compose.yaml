@@ -1,11 +1,96 @@
-#version: '3.8'
+##version: '3.8'
+#
+#services:
+#  ssv2ray:
+#    container_name: ssv2ray
+#    image: alpine
+#    ports:
+#      - "127.0.0.1:444:443"
+#    environment:
+#      - SS_PASS=${SS_PASS}
+#      - SS_PATH=${SS_PASS}
+#      - SS_CIPHER=${SS_CIPHER}
+#      - SS_PORT=${SS_PORT}
+#    working_dir: /usr/local/bin/
+#    volumes:
+#      - ./ssv2ray:/usr/local/bin/
+#    command: [ "go-shadowsocks", "-s", "ss://${SS_CIPHER}:${SS_PASS}@:${SS_PORT}", "-plugin", "v2ray-plugin", "-plugin-opts", "server;path=${SS_PATH}"]
+#    restart: always
+#    networks:
+#      - "xray-net"
+#
+#  website:
+#    container_name: website
+#    image: nginx:alpine
+#    ports:
+#      - "127.0.0.1:3000:80"
+#    volumes: [ "./website:/usr/share/nginx/html" ]
+#    restart: always
+#    networks:
+#      - "xray-net"
+#
+#  xray:
+#    container_name: xray
+#    image: teddysun/xray
+#    ports:
+#      - "127.0.0.1:5310:5310"
+#      - "127.0.0.1:6310:6310"
+#    volumes:
+#      - "./xray/etc:/etc/xray/"
+#      - "./xray/log/:/var/log/xray/"
+#    restart: always
+#    networks:
+#      - "xray-net"
+#
+#  xray-stats:
+#    container_name: xray-stats
+#    image: ubuntu
+#    volumes:
+#      - "./xray/bin/:/usr/local/bin/"
+#      - "./xray/stats:/var/log/xray-stats/"
+#    command: /usr/local/bin/stats
+#    restart: no
+#    networks:
+#      - "xray-net"
+#    profiles:
+#      - stats
+#
+#
+#  sshd:
+#    container_name: sshd
+#    image: rastasheep/ubuntu-sshd:18.04
+##    build: ./sshd
+#    ports:
+#      - "12820:22"
+#    volumes:
+#      - ./sshd/sshd_config:/etc/ssh/sshd_config
+#      - ./sshd/authorized_keys:/home/${mUSER}/.ssh/authorized_keys
+##    environment:
+##      - USER=224b3f18-5efc-4a5f-86d9-a797673410b8
+##      - UID=1000
+##      - GID=1000
+#    command: "sh -c 'useradd ${mUSER} -s /bin/bash && echo ${mUSER}:${mUSER} | chpasswd && mkdir -p /home/${mUSER}/.ssh && chown -R ${mUSER}:${mUSER} /home/${mUSER} && chmod 700  /home/${mUSER}/.ssh && chmod 600  /home/${mUSER}/.ssh/authorized_keys && exec /usr/sbin/sshd -D -e'"
+#    restart: always
+#    networks:
+#      - "xray-net"
+#
+#networks:
+#  xray-net:
+#    name: xray-net
+
+
+
+
+
 
 services:
   ssv2ray:
     container_name: ssv2ray
     image: alpine
-    ports:
-      - "127.0.0.1:444:443"
+    expose:
+      - 443
+#    ports:
+#      - "127.0.0.1:444:443"
     environment:
       - SS_PASS=${SS_PASS}
       - SS_PATH=${SS_PASS}
@@ -22,8 +107,10 @@ services:
   website:
     container_name: website
     image: nginx:alpine
-    ports:
-      - "127.0.0.1:3000:80"
+    expose:
+      - 80
+#    ports:
+#      - "127.0.0.1:3000:80"
     volumes: [ "./website:/usr/share/nginx/html" ]
     restart: always
     networks:
@@ -32,9 +119,12 @@ services:
   xray:
     container_name: xray
     image: teddysun/xray
-    ports:
-      - "127.0.0.1:5310:5310"
-      - "127.0.0.1:6310:6310"
+    expose:
+      - 5310
+      - 6310
+#    ports:
+#      - "127.0.0.1:5310:5310"
+#      - "127.0.0.1:6310:6310"
     volumes:
       - "./xray/etc:/etc/xray/"
       - "./xray/log/:/var/log/xray/"
@@ -55,24 +145,48 @@ services:
     profiles:
       - stats
 
-
   sshd:
     container_name: sshd
     image: rastasheep/ubuntu-sshd:18.04
-#    build: ./sshd
     ports:
       - "12820:22"
     volumes:
       - ./sshd/sshd_config:/etc/ssh/sshd_config
       - ./sshd/authorized_keys:/home/${mUSER}/.ssh/authorized_keys
-#    environment:
-#      - USER=224b3f18-5efc-4a5f-86d9-a797673410b8
-#      - UID=1000
-#      - GID=1000
     command: "sh -c 'useradd ${mUSER} -s /bin/bash && echo ${mUSER}:${mUSER} | chpasswd && mkdir -p /home/${mUSER}/.ssh && chown -R ${mUSER}:${mUSER} /home/${mUSER} && chmod 700  /home/${mUSER}/.ssh && chmod 600  /home/${mUSER}/.ssh/authorized_keys && exec /usr/sbin/sshd -D -e'"
     restart: always
     networks:
       - "xray-net"
+
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - website
+      - ssv2ray
+      - xray
+    networks:
+      - xray-net
+
+  certbot:
+    container_name: certbot
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/config:/config
+    environment:
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - xray-net
 
 networks:
   xray-net:

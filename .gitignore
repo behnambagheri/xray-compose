@@ -7,3 +7,5 @@ config.json
 *company*
 .idea
 /sshd/id_ed25519
+/nginx/nginx.conf
+/certbot
