@@ -87,10 +87,10 @@ services:
   ssv2ray:
     container_name: ssv2ray
     image: alpine
-    expose:
-      - 443
-#    ports:
-#      - "127.0.0.1:444:443"
+#    expose:
+#      - 443
+    ports:
+      - "127.0.0.1:444:443"
     environment:
       - SS_PASS=${SS_PASS}
       - SS_PATH=${SS_PASS}
@@ -107,8 +107,8 @@ services:
   website:
     container_name: website
     image: nginx:alpine
-    expose:
-      - 81
+#    expose:
+#      - 81
     ports:
       - "127.0.0.1:3000:80"
     volumes: [ "./website:/usr/share/nginx/html" ]
@@ -119,12 +119,12 @@ services:
   xray:
     container_name: xray
     image: teddysun/xray
-    expose:
-      - 5310
-      - 6310
-#    ports:
-#      - "127.0.0.1:5310:5310"
-#      - "127.0.0.1:6310:6310"
+#    expose:
+#      - 5310
+#      - 6310
+    ports:
+      - "127.0.0.1:5310:5310"
+      - "127.0.0.1:6310:6310"
     volumes:
       - "./xray/etc:/etc/xray/"
       - "./xray/log/:/var/log/xray/"
