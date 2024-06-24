@@ -1,78 +1,86 @@
-server {
-    listen 80;
-    listen [::]:80;
-    server_name _;
-    location /.well-known/acme-challenge/ {
-        root /var/www/certbot;
-    }
-    location / {
-        return 301 https://$host$request_uri;
-    }
+worker_processes 1;
+
+events {
+    worker_connections 1024;
 }
 
-server {
-    listen 443 ssl;
-    listen [::]:443 ssl;
-    server_name _;
-
-    ssl_certificate /etc/letsencrypt/live/DOMAIN_PLACEHOLDER/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/DOMAIN_PLACEHOLDER/privkey.pem;
-
-    index index.html index.htm;
-    root /var/www/html;
-
-    client_header_timeout 3h;
-    client_body_timeout 3h;
-    keepalive_timeout 3h;
-    client_max_body_size 0;
-    client_body_buffer_size 512k;
-    grpc_read_timeout 3h;
-
-    location / {
-        proxy_pass http://website:80;
+http {
+    server {
+        listen 80;
+        listen [::]:80;
+        server_name _;
+        location /.well-known/acme-challenge/ {
+            root /var/www/certbot;
+        }
+        location / {
+            return 301 https://$host$request_uri;
+        }
     }
 
-    location /tr-ws-IqYJAouF {
-        if ($http_upgrade != "websocket") {
-            proxy_pass http://website:80;
-        }
-        proxy_pass http://xray:5310;
-        proxy_redirect off;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_read_timeout 3h;
-    }
+    server {
+        listen 443 ssl;
+        listen [::]:443 ssl;
+        server_name _;
 
-    location /apiVM {
-        if ($http_upgrade != "websocket") {
-            proxy_pass http://website:80;
-        }
-        proxy_redirect off;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_read_timeout 3h;
-        proxy_set_header X-NginX-Proxy true;
-        rewrite /apiVM /$1 break;
-        proxy_pass http://xray:6310;
-    }
+        ssl_certificate /etc/letsencrypt/live/DOMAIN_PLACEHOLDER/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/DOMAIN_PLACEHOLDER/privkey.pem;
 
-    location /ss-vr-WPqIgYBp {
-        if ($http_upgrade != "websocket") {
+        index index.html index.htm;
+        root /var/www/html;
+
+        client_header_timeout 3h;
+        client_body_timeout 3h;
+        keepalive_timeout 3h;
+        client_max_body_size 0;
+        client_body_buffer_size 512k;
+        grpc_read_timeout 3h;
+
+        location / {
             proxy_pass http://website:80;
         }
-        proxy_redirect off;
-        proxy_http_version 1.1;
-        proxy_pass http://ssv2ray:443;
-        proxy_set_header Host $host;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
+
+        location /tr-ws-IqYJAouF {
+            if ($http_upgrade != "websocket") {
+                proxy_pass http://website:80;
+            }
+            proxy_pass http://xray:5310;
+            proxy_redirect off;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_read_timeout 3h;
+        }
+
+        location /apiVM {
+            if ($http_upgrade != "websocket") {
+                proxy_pass http://website:80;
+            }
+            proxy_redirect off;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_read_timeout 3h;
+            proxy_set_header X-NginX-Proxy true;
+            rewrite /apiVM /$1 break;
+            proxy_pass http://xray:6310;
+        }
+
+        location /ss-vr-WPqIgYBp {
+            if ($http_upgrade != "websocket") {
+                proxy_pass http://website:80;
+            }
+            proxy_redirect off;
+            proxy_http_version 1.1;
+            proxy_pass http://ssv2ray:443;
+            proxy_set_header Host $host;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+        }
     }
 }
