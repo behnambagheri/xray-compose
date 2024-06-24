@@ -17,10 +17,11 @@ domains=($DOMAIN)
 rsa_key_size=4096
 data_path="./certbot"
 email="$EMAIL" # Adding a valid address is strongly recommended
-staging=$STAGING # Set to 1 if you're testing your setup to avoid hitting request limits
+staging="$STAGING" # Set to 1 if you're testing your setup to avoid hitting request limits
 
 if [ -d "$data_path/conf/live/$domains" ]; then
-  read -p "Existing data found for $domains. Continue and replace existing certificate? (y/N) " decision
+  echo "Existing data found for $domains. Continue and replace existing certificate? (y/N) "
+  read decision
   if [ "$decision" != "Y" ] && [ "$decision" != "y" ]; then
     exit
   fi
@@ -55,6 +56,10 @@ docker compose run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
 echo
 
+# Create cloudflare credentials
+echo "dns_cloudflare_api_token = $CLOUDFLARE_API_TOKEN" > certbot/config/cloudflare.ini
+chmod 600 certbot/config/cloudflare.ini
+
 echo "### Requesting Let's Encrypt certificate for $domains ..."
 # Join $domains to -d args
 domain_args=""
@@ -71,14 +76,6 @@ esac
 # Enable staging mode if needed
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
-echo "### Create cloudflare credentials ..."
-
-if ! [[ -d "./certbot/config/" ]]; then
-    mkdir -p ./certbot/config/ 
-fi
-
-echo "dns_cloudflare_api_token = $CLOUDFLARE_API_TOKEN" > ./certbot/config/cloudflare.ini
-
 docker compose run --rm --entrypoint "\
   certbot certonly \
     $staging_arg \
@@ -94,4 +91,4 @@ docker compose run --rm --entrypoint "\
 echo
 
 echo "### Reloading nginx ..."
-docker compose exec nginx nginx -s reload
+docker compose restart nginx
