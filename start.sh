@@ -2,7 +2,7 @@
 
 vim .env
 vim xray/etc/config.json
-chmod +x ./update-nginx-conf.sh
+chmod +x ./update-nginx-conf.sh ./init-letsencrypt.sh
 ./update-nginx-conf.sh
 ./init-letsencrypt.sh
 docker compose down
