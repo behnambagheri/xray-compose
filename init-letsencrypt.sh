@@ -13,6 +13,11 @@ if ! [ -x "$(command -v docker compose)" ]; then
   exit 1
 fi
 
+if ! [[ -d certbot/config ]]; then
+    mkdir -p certbot/config
+
+fi
+
 domains=($DOMAIN)
 rsa_key_size=4096
 data_path="./certbot"
@@ -57,6 +62,7 @@ docker compose run --rm --entrypoint "\
 echo
 
 # Create cloudflare credentials
+
 echo "dns_cloudflare_api_token = $CLOUDFLARE_API_TOKEN" > certbot/config/cloudflare.ini
 chmod 600 certbot/config/cloudflare.ini
 
